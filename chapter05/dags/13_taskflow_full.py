@@ -4,6 +4,9 @@ from airflow import DAG
 from airflow.decorators import task
 from airflow.operators.dummy import DummyOperator
 
+# start -----> fetch_sales --> clean_sales    -----> join_datasets --> train_model --> deploy_model
+#        |--> fetch_weather --> clean_weather --|
+
 with DAG(
     dag_id="13_taskflow_full",
     start_date=airflow.utils.dates.days_ago(3),  # <-- 현재 시점(now) ~ 3 days ago 의 window 를 설정함.
@@ -22,7 +25,7 @@ with DAG(
     start >> [fetch_sales, fetch_weather]     # <-- DummyOperator 로 fan-out 을 만듦. 보기 편하게 만드는 목적.
     fetch_sales >> clean_sales         # <-- fetch_sales 와 clean_sales 가 순사적으로 실행됨.
     fetch_weather >> clean_weather     # <-- `fetch_sales >> clean_sales` 와 `fetch_weather >> clean_weather` 가 병렬로 실행됨.
-    [clean_sales, clean_weather] >> join_datasets      # <-- DummyOperator 로 fan-in 을 만듦.
+    [clean_sales, clean_weather] >> join_datasets      # <-- DummyOperator 로 fan-in 을 만듦. (trigger_rule 설정의 대안)
                                                        # dependencies 중 하나의 failure 로 전체 DAG 가 실행이 멈추는 것을 방지하는 목적.
     @task
     def train_model():            # <-- Taskflow API 사용. 내부적으로 PythonOperator 로 변환된다.

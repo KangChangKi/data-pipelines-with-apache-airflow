@@ -52,4 +52,4 @@ with DAG(
     fetch_weather >> clean_weather
     [join_erp, clean_weather] >> join_datasets
     join_datasets >> train_model >> deploy_model
-    latest_only >> deploy_model
+    latest_only >> deploy_model   # <-- LatestOnlyOperator 만 flow 에 섞어주면 그 이후의 작업은 최신 DAG instance 에서만 실행된다.
