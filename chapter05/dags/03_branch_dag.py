@@ -9,7 +9,7 @@ ERP_CHANGE_DATE = airflow.utils.dates.days_ago(1)
 
 def _pick_erp_system(**context):
     if context["execution_date"] < ERP_CHANGE_DATE:
-        return "fetch_sales_old"
+        return "fetch_sales_old"      # <-- 다음에 실행할 task 의 id 를 리턴하면 된다.
     else:
         return "fetch_sales_new"
 
